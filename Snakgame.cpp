@@ -1,6 +1,7 @@
 #include <bits/stdc++.h>
 #include <conio.h>
 using namespace std;
+
 bool gameOver;
 const int width = 40;
 const int height = 20;
@@ -9,12 +10,14 @@ int tailX[100], tailY[100];
 int nTail;
 enum eDirection { STOP = 0, LEFT, RIGHT, UP, DOWN };
 eDirection dir;
+
 class Food {
 public:
     int x, y;
     virtual void Generate() = 0;
     virtual int GetScoreValue() = 0;
 };
+
 class NormalFood : public Food {
 public:
     NormalFood() { Generate(); }
@@ -26,6 +29,7 @@ public:
         return 10;
     }
 };
+
 class SpecialFood : public Food {
 public:
     SpecialFood() { Generate(); }
@@ -37,6 +41,7 @@ public:
         return 30;
     }
 };
+
 class PowerUp {
 public:
     int x, y;
@@ -45,6 +50,7 @@ public:
     PowerUp() : Active(false) { 
             Generate(); 
         }
+
     void Generate() {
         x = rand() % width;
         y = rand() % height;
@@ -56,36 +62,53 @@ Food* food;
 PowerUp powerUp;
 bool isSpeedReduced = false;
 clock_t speedReductionStartTime;
+
 void Setup() {
     gameOver = false;
-    dir = STOP;
+    dir = RIGHT;
     x = width / 2;
     y = height / 2;
     score = 0;
-    nTail = 0;
+    nTail = 2;
+
+    for (int i = 0; i < nTail; i++) {
+        tailX[i] = x - (i + 1);
+        tailY[i] = y;
+    }
+
     if (rand() % 5 == 0)
         food = new SpecialFood();
     else
         food = new NormalFood();
+
     if (rand() % 10 == 0)  
         powerUp.Generate();   
+    
     else 
         powerUp.Active = false; 
+    
 }
+
+
 void gotoxy(int x, int y) {
     cout << "\033[H";  
 }
+
 void hideCursor() {
     cout << "\033[?25l";
 }
+
 void showCursor() {
     cout << "\033[?25h"; 
 }
+
 void Draw() {
     gotoxy(0, 0);
+
     cout << "\033[1;37m+";
     for (int i = 0; i < width; i++) cout << "-";
     cout << "+\n";
+
     for (int i = 0; i < height; i++) {
         for (int j = 0; j < width + 2; j++) {
             if (j == 0 || j == width + 1)
@@ -116,12 +139,14 @@ void Draw() {
         }
         cout << "\n";
     }
+
     cout << "\033[1;37m+";
     for (int i = 0; i < width; i++) cout << "-";
     cout << "+\n";
 
     cout << "\033[1;37mScore: " << score << endl;
 }
+
 void Input() {
     if (_kbhit()) {
         switch (_getch()) {
@@ -133,10 +158,12 @@ void Input() {
         }
     }
 }
+
 void Logic() {
     int prevX = tailX[0], prevY = tailY[0], prev2X, prev2Y;
     tailX[0] = x;
     tailY[0] = y;
+
     for (int i = 1; i < nTail; i++) {
         prev2X = tailX[i];
         prev2Y = tailY[i];
@@ -154,6 +181,7 @@ void Logic() {
     }
     if (x >= width || x < 0 || y >= height || y < 0)
         gameOver = true;
+
     for (int i = 0; i < nTail; i++) {
         if (tailX[i] == x && tailY[i] == y)
             gameOver = true;
@@ -173,7 +201,7 @@ void Logic() {
         else
             food = new NormalFood();
     }
-        if (x == powerUp.x && y == powerUp.y && powerUp.Active) {
+    if (x == powerUp.x && y == powerUp.y && powerUp.Active) {
         isSpeedReduced = true;
         speedReductionStartTime = clock();
         powerUp.Active = false;  
@@ -208,7 +236,7 @@ int main() {
         }       
     }
     showCursor();
-    cout << "Game Over!" << endl;
+    cout << "Game Over!" << endl << "Thanks for playing!" << endl;
     delete food;
     return 0;
 }
