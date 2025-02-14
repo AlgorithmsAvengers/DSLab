@@ -21,6 +21,8 @@ FEATURES:-
   Colliding with the snake's own body.
 5.Custom speed controlling
   Snake slows down as the power ups are collected whereas continues in a normal speed when normal food or special food is picked.
+6.Player profiles
+  Players can login with their names and can have their seperate high score stored using file management concept.
 
 CONTOLLING:-
   W - Move Up
