@@ -1,5 +1,6 @@
 #include <bits/stdc++.h>
 #include <conio.h>
+
 using namespace std;
 
 bool gameOver;
@@ -10,6 +11,36 @@ int tailX[100], tailY[100];
 int nTail;
 enum eDirection { STOP = 0, LEFT, RIGHT, UP, DOWN };
 eDirection dir;
+
+class Player {
+public:
+    string name;
+    int highScore;
+
+    Player() : highScore(0) {}
+
+    void LoadProfile() {
+        ifstream file("highscore.txt");
+        if (file.is_open()) {
+            getline(file, name);
+            file >> highScore;
+            file.close();
+        } else {
+            highScore = 0;
+        }
+    }
+
+    void SaveProfile() {
+        ofstream file("highscore.txt");
+        if (file.is_open()) {
+            file << name << endl;
+            file << highScore << endl;
+            file.close();
+        }
+    }
+};
+
+Player player;
 
 class Food {
 public:
@@ -48,9 +79,8 @@ public:
     bool Active;
     clock_t spawnTime;
     PowerUp() : Active(false) { 
-            Generate(); 
-        }
-
+        Generate(); 
+    }
     void Generate() {
         x = rand() % width;
         y = rand() % height;
@@ -58,6 +88,7 @@ public:
         spawnTime = clock();
     }
 };
+
 Food* food;
 PowerUp powerUp;
 bool isSpeedReduced = false;
@@ -70,28 +101,28 @@ void Setup() {
     y = height / 2;
     score = 0;
     nTail = 2;
-
     for (int i = 0; i < nTail; i++) {
         tailX[i] = x - (i + 1);
         tailY[i] = y;
     }
+
+    cout << "Enter your name: ";
+    cin >> player.name;
+    player.LoadProfile();
 
     if (rand() % 5 == 0)
         food = new SpecialFood();
     else
         food = new NormalFood();
 
-    if (rand() % 10 == 0)  
-        powerUp.Generate();   
-    
-    else 
-        powerUp.Active = false; 
-    
+    if (rand() % 10 == 0)
+        powerUp.Generate();
+    else
+        powerUp.Active = false;
 }
 
-
 void gotoxy(int x, int y) {
-    cout << "\033[H";  
+    cout << "\033[H";
 }
 
 void hideCursor() {
@@ -99,12 +130,11 @@ void hideCursor() {
 }
 
 void showCursor() {
-    cout << "\033[?25h"; 
+    cout << "\033[?25h";
 }
 
 void Draw() {
     gotoxy(0, 0);
-
     cout << "\033[1;37m+";
     for (int i = 0; i < width; i++) cout << "-";
     cout << "+\n";
@@ -144,7 +174,7 @@ void Draw() {
     for (int i = 0; i < width; i++) cout << "-";
     cout << "+\n";
 
-    cout << "\033[1;37mScore: " << score << endl;
+    cout << "\033[1;37mPlayer: " << player.name << " | Score: " << score << " | High Score: " << player.highScore << endl;
 }
 
 void Input() {
@@ -172,6 +202,7 @@ void Logic() {
         prevX = prev2X;
         prevY = prev2Y;
     }
+
     switch (dir) {
     case LEFT: x--; break;
     case RIGHT: x++; break;
@@ -179,6 +210,7 @@ void Logic() {
     case DOWN: y++; break;
     default: break;
     }
+
     if (x >= width || x < 0 || y >= height || y < 0)
         gameOver = true;
 
@@ -186,40 +218,42 @@ void Logic() {
         if (tailX[i] == x && tailY[i] == y)
             gameOver = true;
     }
+
     if (x == food->x && y == food->y) {
         score += food->GetScoreValue();
-        
-        if (nTail > 0) {
-            tailX[nTail] = tailX[nTail - 1];
-            tailY[nTail] = tailY[nTail - 1];
-        
-        }
         nTail++;
+
         delete food;
         if (rand() % 5 == 0)
             food = new SpecialFood();
         else
             food = new NormalFood();
     }
+
     if (x == powerUp.x && y == powerUp.y && powerUp.Active) {
         isSpeedReduced = true;
         speedReductionStartTime = clock();
-        powerUp.Active = false;  
+        powerUp.Active = false;
     }
+
     if (isSpeedReduced && (clock() - speedReductionStartTime) / CLOCKS_PER_SEC >= 10) {
-        isSpeedReduced = false;    
+        isSpeedReduced = false;
     }
+
     if (powerUp.Active && (clock() - powerUp.spawnTime) / CLOCKS_PER_SEC >= 10) {
         powerUp.Active = false;
     }
-    if (!powerUp.Active && rand() % 300 == 0) {  
+
+    if (!powerUp.Active && rand() % 300 == 0) {
         powerUp.Generate();
     }
 }
+
 void delay(int milliseconds) {
     clock_t start_time = clock();
     while (clock() < start_time + milliseconds * CLOCKS_PER_SEC / 1000);
 }
+
 int main() {
     cout << "\033[2J\033[H";
     Setup();
@@ -228,15 +262,16 @@ int main() {
         Draw();
         Input();
         Logic();
-        if (isSpeedReduced) {
-            delay(200);  
-        } 
-        else {
-            delay(100);  
-        }       
+        delay(isSpeedReduced ? 200 : 100);
     }
+
+    if (score > player.highScore) {
+        player.highScore = score;
+        player.SaveProfile();
+    }
+
     showCursor();
-    cout << "Game Over!" << endl << "Thanks for playing!" << endl;
+    cout << "Game Over! Your Final Score: " << score << endl << "Thanks for playing!" << endl;
     delete food;
     return 0;
 }
