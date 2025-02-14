@@ -10,17 +10,17 @@ tha game in a better way,this game blends with nostalgia with fresh and exicitin
 FEATURES:-
 1.Scoring->
   Normal food('F') gives 10 points.
-  special food('S') gives 30 points.
+  Special food('S') gives 30 points.
 2.Classic snake movements->
-  move the snake using the 'W','A','S','D' keys.
+  Move the snake using the 'W','A','S','D' keys.
 3.Power-Ups
-  randomly spawn and provides speed deduction.
+  Randomly spawn and provides speed deduction.
   Disappear after 10 seconds if not collected.
 4.Game Over Conditions:-
   Colliding with the walls.
   Colliding with the snake's own body.
 5.Custom speed controlling
-  snake slows down as the power ups are collected whereas continues in a normal speed when normal food or special food is picked.
+  Snake slows down as the power ups are collected whereas continues in a normal speed when normal food or special food is picked.
 
 CONTOLLING:-
   W - Move Up
@@ -30,17 +30,17 @@ CONTOLLING:-
   X - Exit the game
 
 REQUIREMENTS:-
-  C++ compiler
+  C++ Compiler
   Linux/Windows Terminal
 
 GAME PREVIEW:-
   ![image](https://github.com/user-attachments/assets/07c814bf-1c25-43c8-9051-1b895f04fa22)
 
 FUTURE ENHANCEMENTS:-
-  adding poison to the game which on eating kills the snake.
+  Adding poison to the game which on eating kills the snake.
 
 LICENSE:-
-  this game is a open-source and free to use.
+  This game is a open-source and free to use.
 
 DEVLOPED BY:-
   Team-Algorithm Avengers
